@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>빚투 STOP · 청년 금융 리터러시 체험</title>
+<style>
+  :root{
+    --blue:#3182F6; --blue-dark:#1B64DA; --blue-bg:#EAF2FE;
+    --red:#F04452; --red-bg:#FEECEE;
+    --green:#12B886; --green-bg:#E6F7F1;
+    --ink:#191F28; --sub:#4E5968; --sub2:#8B95A1;
+    --line:#E5E8EB; --bg:#F2F4F6; --card:#FFFFFF;
+    --amber:#FF9500; --amber-bg:#FFF4E5;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:#DCE0E5;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",system-ui,sans-serif;color:var(--ink);}
+  body{display:flex;justify-content:center;align-items:center;min-height:100vh;padding:24px;}
+  .phone{width:390px;height:800px;max-height:92vh;background:var(--bg);border-radius:44px;box-shadow:0 24px 70px rgba(0,0,0,.35);overflow:hidden;position:relative;border:10px solid #0f0f10;}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;background:#0f0f10;border-radius:0 0 18px 18px;z-index:60;}
+  .statusbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 24px;font-size:13px;font-weight:600;}
+  .statusbar .right{font-size:12px;}
+
+  .screen{position:absolute;inset:0;top:44px;display:none;flex-direction:column;background:var(--bg);z-index:10;}
+  .screen.active{display:flex;}
+  .topbar{display:flex;align-items:center;height:52px;padding:0 8px;background:var(--bg);flex-shrink:0;}
+  .topbar .back{width:44px;height:44px;border:none;background:none;font-size:24px;color:var(--ink);cursor:pointer;}
+  .topbar .title{font-size:17px;font-weight:700;}
+  .scroll{flex:1;overflow-y:auto;padding:4px 20px 28px;}
+
+  .h1{font-size:23px;font-weight:800;letter-spacing:-.5px;margin:6px 4px 2px;line-height:1.3;}
+  .hsub{font-size:13.5px;color:var(--sub2);margin:0 4px 16px;line-height:1.5;}
+  .sec-label{font-size:13px;font-weight:700;color:var(--sub2);margin:20px 4px 8px;}
+
+  /* HOME */
+  .hook{background:linear-gradient(135deg,#F04452,#FF7A3D);border-radius:22px;padding:22px 20px;color:#fff;margin:8px 2px 6px;position:relative;overflow:hidden;}
+  .hook .tag{font-size:12px;font-weight:800;opacity:.9;letter-spacing:.3px;}
+  .hook h2{font-size:22px;font-weight:800;line-height:1.35;margin:8px 0 6px;letter-spacing:-.5px;}
+  .hook p{font-size:13px;line-height:1.55;opacity:.95;margin:0;}
+  .hook .big{font-size:34px;font-weight:900;letter-spacing:-1px;}
+  .hook .emoji{position:absolute;right:-6px;bottom:-10px;font-size:78px;opacity:.18;}
+
+  .card{background:var(--card);border-radius:18px;box-shadow:0 1px 2px rgba(0,0,0,.03);}
+  .menu{display:flex;align-items:center;gap:14px;padding:16px 16px;cursor:pointer;border-radius:16px;}
+  .menu:active{background:#F7F8FA;}
+  .menu+.menu{border-top:1px solid var(--line);}
+  .menu .mic{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0;}
+  .m1{background:var(--red-bg);} .m2{background:var(--blue-bg);} .m3{background:var(--green-bg);} .m4{background:var(--amber-bg);}
+  .menu .mbody{flex:1;}
+  .menu .mt{font-size:16px;font-weight:700;}
+  .menu .md{font-size:12.5px;color:var(--sub2);margin-top:3px;line-height:1.4;}
+  .menu .arrow{color:#C6CDD5;font-size:20px;}
+
+  /* app banner -> hub */
+  .appbanner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#F04452,#FF7A3D);color:#fff;border-radius:16px;padding:15px 16px;margin:14px 2px 6px;cursor:pointer;box-shadow:0 6px 16px rgba(240,68,82,.25);}
+  .appbanner:active{transform:scale(.99);}
+  .appbanner .ab-txt{flex:1;}
+  .appbanner .ab-t{font-size:15px;font-weight:800;}
+  .appbanner .ab-d{font-size:12px;opacity:.92;margin-top:3px;}
+  .appbanner .ab-arrow{font-size:22px;opacity:.9;}
+
+  /* rows (product list) */
+  .row{display:flex;align-items:center;gap:14px;padding:14px;cursor:pointer;border-radius:14px;}
+  .row:active{background:#F7F8FA;}
+  .row+.row{border-top:1px solid var(--line);}
+  .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;flex-shrink:0;}
+  .ic.samsung{background:#1428A0;} .ic.kodex{background:#111827;}
+  .ic.lev{background:linear-gradient(135deg,#F04452,#FF7A00);} .ic.inv{background:linear-gradient(135deg,#7C3AED,#F04452);}
+  .row .rbody{flex:1;min-width:0;} .row .nm{font-size:16px;font-weight:700;}
+  .row .rmeta{font-size:12.5px;color:var(--sub2);margin-top:3px;display:flex;align-items:center;gap:6px;}
+  .row .price{text-align:right;} .row .price .p{font-size:15px;font-weight:700;} .row .price .c{font-size:12.5px;font-weight:600;margin-top:3px;}
+  .up{color:var(--red);} .down{color:var(--blue);}
+  .tag-risk{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:800;color:var(--red);background:var(--red-bg);padding:2px 7px;border-radius:6px;}
+
+  /* buttons */
+  .cta{padding:14px 20px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#fff;flex-shrink:0;}
+  .btn{width:100%;border:none;border-radius:15px;font-size:16px;font-weight:800;padding:16px;cursor:pointer;font-family:inherit;}
+  .btn-primary{background:var(--blue);color:#fff;} .btn-primary:disabled{background:#C6D3E4;cursor:not-allowed;}
+  .btn-ghost{background:none;color:var(--sub2);margin-top:4px;}
+  .btn-red{background:var(--red);color:#fff;} .btn-green{background:var(--green);color:#fff;}
+
+  /* ===== 음의 복리 ===== */
+  .panelbox{background:#fff;border-radius:18px;padding:18px 16px;margin:10px 2px;}
+  .chartwrap{position:relative;width:100%;height:190px;margin:6px 0 4px;}
+  canvas{width:100%;height:100%;display:block;}
+  .legend{display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--sub);margin-top:4px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .ctrl{margin:16px 2px 4px;}
+  .ctrl .lab{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:8px;}
+  .ctrl .lab b{color:var(--blue);}
+  input[type=range]{width:100%;accent-color:var(--blue);height:24px;}
+  .seg{display:flex;gap:8px;margin-top:10px;}
+  .seg button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px;font-size:13px;font-weight:700;color:var(--sub);cursor:pointer;font-family:inherit;}
+  .seg button.on{border-color:var(--blue);color:var(--blue);background:var(--blue-bg);}
+  .result{display:flex;gap:10px;margin:16px 2px 4px;}
+  .rescard{flex:1;border-radius:16px;padding:14px 12px;text-align:center;}
+  .rescard.idx{background:var(--bg);} .rescard.lev{background:var(--red-bg);}
+  .rescard .rl{font-size:12px;font-weight:700;color:var(--sub2);}
+  .rescard .rv{font-size:24px;font-weight:900;margin-top:6px;letter-spacing:-.5px;}
+  .explain{background:var(--amber-bg);border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.65;color:var(--sub);margin:14px 2px 6px;}
+  .explain b{color:var(--ink);}
+
+  /* ===== 퀴즈 ===== */
+  .qprog{height:6px;background:var(--line);border-radius:3px;margin:4px 2px 18px;overflow:hidden;}
+  .qprog i{display:block;height:100%;background:var(--blue);border-radius:3px;transition:width .3s;}
+  .qnum{font-size:13px;font-weight:800;color:var(--blue);margin:0 2px 8px;}
+  .qtext{font-size:20px;font-weight:800;line-height:1.4;margin:0 2px 20px;letter-spacing:-.4px;}
+  .opt{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px;margin:0 2px 12px;font-size:15px;font-weight:600;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:12px;}
+  .opt .ob{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--sub2);}
+  .opt.correct{border-color:var(--green);background:var(--green-bg);} .opt.correct .ob{background:var(--green);border-color:var(--green);color:#fff;}
+  .opt.wrong{border-color:var(--red);background:var(--red-bg);} .opt.wrong .ob{background:var(--red);border-color:var(--red);color:#fff;}
+  .opt.disabled{pointer-events:none;}
+  .qexp{background:var(--bg);border-radius:14px;padding:14px 16px;font-size:13.5px;line-height:1.6;color:var(--sub);margin:6px 2px 0;display:none;}
+  .qexp.show{display:block;}
+  .qexp b{color:var(--ink);}
+  .quiz-result{text-align:center;padding:40px 12px;}
+  .quiz-result .em{font-size:60px;} .quiz-result h2{font-size:24px;font-weight:800;margin:16px 0 8px;}
+  .quiz-result .score{font-size:44px;font-weight:900;color:var(--blue);letter-spacing:-1px;}
+  .quiz-result p{color:var(--sub2);font-size:14px;line-height:1.6;margin:8px 24px 0;}
+
+  /* ===== 시뮬레이션 ===== */
+  .simhead{background:#fff;border-radius:18px;padding:16px;margin:8px 2px 12px;}
+  .simhead .snm{font-size:14px;color:var(--sub2);font-weight:700;}
+  .simhead .sp{font-size:30px;font-weight:900;letter-spacing:-1px;margin-top:2px;}
+  .simhead .sc{font-size:14px;font-weight:700;margin-top:2px;}
+  .simstat{display:flex;background:#fff;border-radius:16px;margin:0 2px 12px;overflow:hidden;}
+  .simstat div{flex:1;padding:14px 10px;text-align:center;}
+  .simstat div+div{border-left:1px solid var(--line);}
+  .simstat .l{font-size:11.5px;color:var(--sub2);font-weight:700;}
+  .simstat .v{font-size:16px;font-weight:800;margin-top:4px;}
+  .day-btn{width:100%;border:none;background:var(--ink);color:#fff;border-radius:14px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin:2px 2px 0;}
+  .trade-row{display:flex;gap:10px;margin:12px 2px 0;}
+  .trade-row button{flex:1;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;color:#fff;}
+  .simlog{background:#fff;border-radius:14px;padding:12px 14px;margin:12px 2px 0;font-size:12.5px;color:var(--sub);line-height:1.7;max-height:120px;overflow-y:auto;}
+  .simlog .win{color:var(--red);font-weight:700;} .simlog .lose{color:var(--blue);font-weight:700;}
+  .simnote{font-size:12px;color:var(--sub2);text-align:center;margin:14px 12px 0;line-height:1.5;}
+
+  /* warning sheet */
+  .sheet{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end;pointer-events:none;}
+  .sheet .dim{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;transition:opacity .3s;}
+  .sheet .spanel{position:relative;background:#fff;border-radius:28px 28px 0 0;max-height:100%;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;}
+  .sheet.open{pointer-events:auto;} .sheet.open .dim{opacity:1;} .sheet.open .spanel{transform:translateY(0);}
+  .grabber{width:44px;height:5px;background:#E5E8EB;border-radius:3px;margin:10px auto 2px;}
+  .warn-scroll{overflow-y:auto;padding:8px 24px 4px;}
+  .warn-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red-bg);color:var(--red);font-weight:800;font-size:13px;padding:7px 12px;border-radius:999px;margin:6px 0 14px;}
+  .warn-title{font-size:22px;font-weight:800;line-height:1.35;letter-spacing:-.5px;margin:0 0 6px;}
+  .warn-title b{color:var(--red);}
+  .warn-lead{font-size:14px;color:var(--sub);line-height:1.6;margin:0 0 20px;}
+  .fact{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--line);}
+  .fact:last-of-type{border-bottom:1px solid var(--line);}
+  .fact .fic{width:34px;height:34px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .fact .ft{font-size:14.5px;font-weight:700;margin-bottom:3px;} .fact .fd{font-size:13px;color:var(--sub);line-height:1.55;}
+  .check{margin:18px 0 6px;} .check .ck-title{font-size:14px;font-weight:800;margin-bottom:10px;}
+  .ck{display:flex;align-items:flex-start;gap:10px;padding:9px 0;font-size:13.5px;color:var(--sub);cursor:pointer;}
+  .ck .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;transition:.15s;}
+  .ck.on .box{background:var(--blue);border-color:var(--blue);} .ck.on{color:var(--ink);font-weight:600;}
+
+  .toast{position:absolute;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(25,31,40,.94);color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:12px;opacity:0;transition:.25s;z-index:80;white-space:nowrap;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span class="right">●●●● 5G ▮</span></div>
+
+    <!-- ===== 체험 허브 (배너/고위험 클릭 시 진입) ===== -->
+    <section class="screen" id="home">
+      <div class="topbar"><button class="back" onclick="go('list')">‹</button><div class="title">빚투 STOP 체험</div></div>
+      <div class="scroll">
+        <div class="hook">
+          <div class="tag">2030 투자자 리포트</div>
+          <h2>10명 중 <span class="big">7명</span>이<br>투자 경력 1년 미만.</h2>
+          <p>수익률만 보고 레버리지에 뛰어들기 전에,<br>3분만 체험해볼까요?</p>
+          <div class="emoji">📉</div>
+        </div>
+
+        <div class="sec-label">체험하기</div>
+        <div class="card">
+          <div class="menu" onclick="go('neg')">
+            <div class="mic m1">🌀</div>
+            <div class="mbody"><div class="mt">음의 복리 체험</div><div class="md">지수는 제자리인데 왜 내 돈은 줄어들까?</div></div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="menu" onclick="startQuiz()">
+            <div class="mic m2">🧠</div>
+            <div class="mbody"><div class="mt">주식 용어 퀴즈</div><div class="md">레버리지·반대매매, 얼마나 알고 있나요?</div></div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="menu" onclick="go('sim'); initSim();">
+            <div class="mic m3">📊</div>
+            <div class="mbody"><div class="mt">모의투자 시뮬레이션</div><div class="md">가짜 돈으로 레버리지 매매를 직접 경험</div></div>
+            <div class="arrow">›</div>
+          </div>
+          <div class="menu" onclick="openWarning('KODEX 레버리지')">
+            <div class="mic m4">⚠️</div>
+            <div class="mbody"><div class="mt">위험 상품 안내 다시보기</div><div class="md">고위험 상품 선택 시 뜨는 경고 화면</div></div>
+            <div class="arrow">›</div>
+          </div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+    </section>
+
+    <!-- ===== 음의 복리 ===== -->
+    <section class="screen" id="neg">
+      <div class="topbar"><button class="back" onclick="go('home')">‹</button><div class="title">음의 복리 체험</div></div>
+      <div class="scroll">
+        <div class="h1">지수는 제자리인데<br>내 돈은 줄어들어요</div>
+        <div class="hsub">레버리지 상품은 매일 2배로 다시 계산돼서, 오르락내리락만 반복해도 원금이 깎여요. 이걸 '음의 복리(변동성 손실)'라고 해요.</div>
+
+        <div class="panelbox">
+          <div class="chartwrap"><canvas id="negChart"></canvas></div>
+          <div class="legend">
+            <span><i class="dot" style="background:#8B95A1"></i>지수(원본)</span>
+            <span><i class="dot" style="background:#F04452"></i>2배 레버리지</span>
+          </div>
+        </div>
+
+        <div class="ctrl">
+          <div class="lab"><span>가격 출렁임 정도</span><b id="volVal">10%</b></div>
+          <input type="range" id="volSlider" min="2" max="20" value="10" step="1" oninput="renderNeg()" />
+          <div class="seg">
+            <button id="d10" class="on" onclick="setDays(10)">10일</button>
+            <button id="d20" onclick="setDays(20)">20일</button>
+            <button id="d30" onclick="setDays(30)">30일</button>
+          </div>
+        </div>
+
+        <div class="result">
+          <div class="rescard idx"><div class="rl">지수 최종</div><div class="rv" id="idxRes">0.0%</div></div>
+          <div class="rescard lev"><div class="rl">레버리지 최종</div><div class="rv up" id="levRes" style="color:var(--red)">-0.0%</div></div>
+        </div>
+
+        <div class="explain" id="negExplain"></div>
+      </div>
+    </section>
+
+    <!-- ===== 퀴즈 ===== -->
+    <section class="screen" id="quiz">
+      <div class="topbar"><button class="back" onclick="go('home')">‹</button><div class="title">주식 용어 퀴즈</div></div>
+      <div class="scroll" id="quizScroll">
+        <div class="qprog"><i id="qbar" style="width:0%"></i></div>
+        <div class="qnum" id="qnum">Q1</div>
+        <div class="qtext" id="qtext">문제</div>
+        <div id="qopts"></div>
+        <div class="qexp" id="qexp"></div>
+      </div>
+      <div class="cta" id="quizCta" style="display:none"><button class="btn btn-primary" id="qnext" onclick="nextQ()">다음</button></div>
+    </section>
+
+    <!-- ===== 시뮬레이션 ===== -->
+    <section class="screen" id="sim">
+      <div class="topbar"><button class="back" onclick="go('home')">‹</button><div class="title">모의투자 · KODEX 레버리지</div></div>
+      <div class="scroll">
+        <div class="simhead">
+          <div class="snm">KODEX 레버리지 <span class="tag-risk" style="margin-left:4px">2X</span></div>
+          <div class="sp" id="simPrice">10,000원</div>
+          <div class="sc" id="simChg">0.0% (오늘)</div>
+        </div>
+        <div class="chartwrap" style="height:150px;background:#fff;border-radius:16px;padding:8px 6px;margin:0 2px 12px;"><canvas id="simChart"></canvas></div>
+
+        <div class="simstat">
+          <div><div class="l">현금</div><div class="v" id="simCash">1,000,000</div></div>
+          <div><div class="l">보유수량</div><div class="v" id="simQty">0주</div></div>
+          <div><div class="l">평가손익</div><div class="v" id="simPnl">0</div></div>
+        </div>
+
+        <button class="day-btn" onclick="simNextDay()">⏭ 하루 지나기</button>
+        <div class="trade-row">
+          <button class="btn-red" onclick="simBuy()">매수 (10주)</button>
+          <button class="btn-green" onclick="simSell()">매도 (10주)</button>
+        </div>
+
+        <div class="simlog" id="simLog"></div>
+        <div class="simnote">실제 돈이 아닌 모의 자금이에요. '하루 지나기'를 누르면 지수 ±α의 <b>2배</b>로 가격이 움직입니다. 며칠 돌려보면 왜 위험한지 몸으로 느껴져요.</div>
+        <div style="height:16px"></div>
+      </div>
+    </section>
+
+    <!-- ===== 상품 목록 (메인/랜딩) ===== -->
+    <section class="screen active" id="list">
+      <div class="topbar"><div style="width:16px"></div><div class="title" style="margin-left:8px">투자</div></div>
+      <div class="scroll">
+        <div class="h1">오늘의 인기 종목</div>
+        <div class="hsub">거래량이 급증한 상품이에요</div>
+        <div class="appbanner" onclick="go('home')">
+          <div class="ab-txt"><div class="ab-t">⚠️ 빚투하기 전, 3분 체험</div><div class="ab-d">레버리지 위험을 직접 확인해보세요</div></div>
+          <div class="ab-arrow">›</div>
+        </div>
+        <div class="sec-label">주식</div>
+        <div class="card">
+          <div class="row" onclick="openOrder('삼성전자','일반 주식')">
+            <div class="ic samsung">S</div>
+            <div class="rbody"><div class="nm">삼성전자</div><div class="rmeta">코스피 · 반도체</div></div>
+            <div class="price"><div class="p">71,200</div><div class="c up">+1.4%</div></div>
+          </div>
+          <div class="row" onclick="openOrder('KODEX 200','ETF')">
+            <div class="ic kodex">K</div>
+            <div class="rbody"><div class="nm">KODEX 200</div><div class="rmeta">지수 추종 ETF</div></div>
+            <div class="price"><div class="p">38,540</div><div class="c up">+0.8%</div></div>
+          </div>
+        </div>
+        <div class="sec-label">레버리지 · 인버스</div>
+        <div class="card">
+          <div class="row" onclick="enterHub('KODEX 레버리지')">
+            <div class="ic lev">2X</div>
+            <div class="rbody"><div class="nm">KODEX 레버리지</div><div class="rmeta"><span class="tag-risk">⚠ 고위험</span> 지수 2배 추종</div></div>
+            <div class="price"><div class="p">17,830</div><div class="c up">+3.1%</div></div>
+          </div>
+          <div class="row" onclick="enterHub('KODEX 200선물인버스2X')">
+            <div class="ic inv">-2X</div>
+            <div class="rbody"><div class="nm">200선물인버스2X</div><div class="rmeta"><span class="tag-risk">⚠ 고위험</span> 하락 2배 추종</div></div>
+            <div class="price"><div class="p">2,145</div><div class="c down">-2.9%</div></div>
+          </div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+    </section>
+
+    <!-- ===== 주문 ===== -->
+    <section class="screen" id="order">
+      <div class="topbar"><button class="back" onclick="go('list')">‹</button><div class="title" id="orderTitle">주문</div></div>
+      <div class="scroll">
+        <div style="text-align:center;padding:34px 0 10px;">
+          <div style="font-size:52px">🧾</div>
+          <h2 id="orderName" style="font-size:20px;font-weight:800;margin:14px 0 6px;">상품</h2>
+          <p id="orderDesc" style="font-size:13.5px;color:var(--sub2);line-height:1.6;margin:0 24px;"></p>
+        </div>
+        <div class="panelbox" style="background:#fff;">
+          <div style="font-size:13px;font-weight:800;color:var(--blue);margin-bottom:6px;">💡 알아두기</div>
+          <div style="font-size:13px;color:var(--sub);line-height:1.6;">이 화면은 데모예요. 고위험 상품은 주문 전에 <b>빚투 위험 안내</b>가 먼저 떠요.</div>
+        </div>
+      </div>
+      <div class="cta"><button class="btn btn-primary" onclick="toast('데모: 주문이 접수되었어요')">매수하기</button></div>
+    </section>
+
+    <!-- ===== 경고 바텀시트 ===== -->
+    <div class="sheet" id="warnSheet">
+      <div class="dim" onclick="closeWarning()"></div>
+      <div class="spanel">
+        <div class="grabber"></div>
+        <div class="warn-scroll">
+          <span class="warn-badge">⚠ 빚투 위험 안내</span>
+          <h2 class="warn-title">지금 고르신 건<br><b id="warnProduct">레버리지 상품</b>이에요.<br>투자 전에 꼭 확인하세요.</h2>
+          <p class="warn-lead">레버리지·인버스 상품은 지수 움직임의 <b>2배로 손익이 커지는</b> 고위험 상품이에요. 특히 대출·빚으로 투자하면 손실이 감당하기 어려워질 수 있어요.</p>
+          <div class="fact"><div class="fic">📈</div><div><div class="ft">변동성이 2배예요</div><div class="fd">지수가 3% 내리면 이 상품은 약 6% 내려요.</div></div></div>
+          <div class="fact"><div class="fic">🌀</div><div><div class="ft">오래 들수록 불리해요 (음의 복리)</div><div class="fd">오르락내리락만 해도 원금이 깎여요. '음의 복리 체험'에서 직접 확인해보세요.</div></div></div>
+          <div class="fact"><div class="fic">💳</div><div><div class="ft">빚으로 투자하면 위험이 배가돼요</div><div class="fd">신용·미수로 산 뒤 하락하면 반대매매로 원금 이상 잃을 수 있어요.</div></div></div>
+          <div class="check">
+            <div class="ck-title">아래 내용을 이해했는지 확인해주세요</div>
+            <div class="ck" onclick="toggleCk(this)"><div class="box">✓</div><div>손익이 지수의 2배로 움직인다는 걸 이해했어요</div></div>
+            <div class="ck" onclick="toggleCk(this)"><div class="box">✓</div><div>장기 보유 시 음의 복리로 손실이 날 수 있음을 알아요</div></div>
+            <div class="ck" onclick="toggleCk(this)"><div class="box">✓</div><div>대출·빚이 아닌, 잃어도 되는 여윳돈으로 투자해요</div></div>
+          </div>
+          <div style="height:8px"></div>
+        </div>
+        <div class="cta">
+          <button class="btn btn-primary" id="proceedBtn" disabled onclick="proceedAfterWarning()">이해했어요, 계속하기</button>
+          <button class="btn btn-ghost" onclick="closeWarning()">돌아가기</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+<script>
+/* ---------- 라우팅 ---------- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  document.querySelector('#'+id+' .scroll').scrollTop = 0;
+  if(id==='neg') renderNeg();
+}
+
+/* ---------- 음의 복리 ---------- */
+var negDays = 10;
+function setDays(d){
+  negDays = d;
+  ['d10','d20','d30'].forEach(function(x){document.getElementById(x).classList.remove('on');});
+  document.getElementById('d'+d).classList.add('on');
+  renderNeg();
+}
+function renderNeg(){
+  var vol = +document.getElementById('volSlider').value;
+  document.getElementById('volVal').textContent = vol+'%';
+  // 지수는 1.0 <-> (1-s)를 오가며 짝수일엔 제자리로 복귀. 레버리지는 매일 2배 재계산.
+  var s=vol/100;
+  var idx=[1], lev=[1];
+  for(var i=1;i<=negDays;i++){
+    var target = (i%2===1) ? (1-s) : 1;     // 홀수일 하락, 짝수일 원위치
+    var r = target/idx[i-1] - 1;            // 그날의 지수 등락률
+    idx.push(target);
+    lev.push(lev[i-1]*(1+2*r));             // 레버리지는 등락률의 2배
+  }
+  drawNeg(idx, lev);
+  var idxFinal = (idx[negDays]-1)*100;
+  var levFinal = (lev[negDays]-1)*100;
+  document.getElementById('idxRes').textContent = (idxFinal>=0?'+':'')+idxFinal.toFixed(1)+'%';
+  var lr = document.getElementById('levRes');
+  lr.textContent = (levFinal>=0?'+':'')+levFinal.toFixed(1)+'%';
+  lr.style.color = levFinal>=0? 'var(--red)' : 'var(--blue)';
+  document.getElementById('negExplain').innerHTML =
+    '지수는 <b>'+(idxFinal>=0?'+':'')+idxFinal.toFixed(1)+'%</b>로 거의 제자리인데, 2배 레버리지는 <b style="color:var(--blue)">'+levFinal.toFixed(1)+'%</b>예요. '+
+    '등락을 반복할수록 이 차이가 벌어집니다. 등락폭을 키우거나 기간을 늘려보세요 — 손실이 더 커져요.';
+}
+function drawNeg(idx, lev){
+  var cv=document.getElementById('negChart');
+  var ctx=cv.getContext('2d');
+  var w=cv.clientWidth, h=cv.clientHeight, dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr; cv.height=h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  var all=idx.concat(lev), min=Math.min.apply(null,all), max=Math.max.apply(null,all);
+  var pad=16, gap=(max-min)||0.1; min-=gap*0.1; max+=gap*0.1;
+  function X(i){return pad + i*(w-2*pad)/(idx.length-1);}
+  function Y(v){return h-pad - (v-min)/(max-min)*(h-2*pad);}
+  // baseline 1.0
+  ctx.strokeStyle='#EDF0F3'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(pad,Y(1)); ctx.lineTo(w-pad,Y(1)); ctx.stroke(); ctx.setLineDash([]);
+  function line(arr,color,wd){
+    ctx.strokeStyle=color; ctx.lineWidth=wd; ctx.lineJoin='round';
+    ctx.beginPath(); arr.forEach(function(v,i){ i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)); }); ctx.stroke();
+  }
+  line(idx,'#8B95A1',2);
+  line(lev,'#F04452',2.6);
+  // end dots
+  ctx.fillStyle='#8B95A1'; ctx.beginPath(); ctx.arc(X(idx.length-1),Y(idx[idx.length-1]),3.5,0,7); ctx.fill();
+  ctx.fillStyle='#F04452'; ctx.beginPath(); ctx.arc(X(lev.length-1),Y(lev[lev.length-1]),4,0,7); ctx.fill();
+}
+
+/* ---------- 퀴즈 ---------- */
+var QUIZ=[
+  {q:"'레버리지 ETF'의 핵심 특징은?",
+   opts:["지수와 똑같이 1배로 움직인다","지수 움직임의 2배(또는 3배)로 움직인다","원금이 절대 손실나지 않는다"],
+   a:1, e:"레버리지 ETF는 기초지수의 하루 수익률을 2배(때로 3배)로 추종해요. 수익도 손실도 그만큼 커집니다."},
+  {q:"지수가 오늘 -3% 내리면 2배 레버리지 상품은?",
+   opts:["약 -1.5%","약 -3%","약 -6%"],
+   a:2, e:"2배 상품이라 하루 등락의 2배, 약 -6%가 돼요. 반대로 오를 때도 2배입니다."},
+  {q:"지수가 제자리인데 레버리지 상품은 손해나는 현상을?",
+   opts:["음의 복리(변동성 손실)","단리 효과","액면분할"],
+   a:0, e:"매일 2배로 재계산되기 때문에 오르락내리락만 반복해도 원금이 깎여요. 이걸 음의 복리 또는 변동성 손실이라 해요."},
+  {q:"빚(신용·미수)으로 산 주식이 급락하면 강제로 청산되는 것은?",
+   opts:["공매도","반대매매","배당락"],
+   a:1, e:"담보 가치가 기준 밑으로 떨어지면 증권사가 강제로 파는 '반대매매'가 일어나, 원금 이상 잃을 수 있어요."},
+  {q:"'빚투'가 특히 위험한 이유로 맞는 것은?",
+   opts:["세금이 많이 붙어서","손실이 나도 갚아야 할 원금과 이자가 남아서","거래 수수료가 비싸서"],
+   a:1, e:"내 돈이면 잃고 끝이지만, 빚투는 손실 위에 갚을 원금과 이자까지 남아요. 그래서 위험이 배가됩니다."}
+];
+var qi=0, qscore=0, qanswered=false;
+function startQuiz(){ qi=0; qscore=0; go('quiz'); renderQ(); }
+function renderQ(){
+  qanswered=false;
+  document.getElementById('quizScroll').style.display='';
+  var q=QUIZ[qi];
+  document.getElementById('qbar').style.width=((qi)/QUIZ.length*100)+'%';
+  document.getElementById('qnum').textContent='Q'+(qi+1)+' / '+QUIZ.length;
+  document.getElementById('qtext').textContent=q.q;
+  var wrap=document.getElementById('qopts'); wrap.innerHTML='';
+  q.opts.forEach(function(o,i){
+    var el=document.createElement('div'); el.className='opt';
+    el.innerHTML='<div class="ob">'+String.fromCharCode(65+i)+'</div><div>'+o+'</div>';
+    el.onclick=function(){ answerQ(i, el); };
+    wrap.appendChild(el);
+  });
+  var ex=document.getElementById('qexp'); ex.classList.remove('show'); ex.textContent='';
+  document.getElementById('quizCta').style.display='none';
+  document.getElementById('qnext').textContent = (qi===QUIZ.length-1)?'결과 보기':'다음';
+}
+function answerQ(i, el){
+  if(qanswered) return; qanswered=true;
+  var q=QUIZ[qi];
+  var opts=document.querySelectorAll('#qopts .opt');
+  opts.forEach(function(o){o.classList.add('disabled');});
+  opts[q.a].classList.add('correct');
+  if(i===q.a){ qscore++; } else { el.classList.add('wrong'); }
+  var ex=document.getElementById('qexp');
+  ex.innerHTML=(i===q.a?'✅ 정답! ':'❌ 아쉬워요. ')+'<b>'+q.opts[q.a]+'</b><br>'+q.e;
+  ex.classList.add('show');
+  document.getElementById('quizCta').style.display='';
+}
+function nextQ(){
+  if(qi<QUIZ.length-1){ qi++; renderQ(); document.querySelector('#quiz .scroll').scrollTop=0; }
+  else{ showQuizResult(); }
+}
+function showQuizResult(){
+  document.getElementById('qbar').style.width='100%';
+  document.getElementById('quizCta').style.display='none';
+  var msg = qscore>=4? '금융 리터러시가 탄탄해요!' : qscore>=2? '조금만 더 알면 안전해져요.' : '위험 신호! 체험부터 시작해봐요.';
+  document.getElementById('quizScroll').innerHTML =
+    '<div class="quiz-result"><div class="em">'+(qscore>=4?'🎉':qscore>=2?'👍':'🚨')+'</div>'+
+    '<h2>결과</h2><div class="score">'+qscore+' / '+QUIZ.length+'</div>'+
+    '<p>'+msg+'</p>'+
+    '<div style="margin-top:26px;display:flex;flex-direction:column;gap:10px;">'+
+    '<button class="btn btn-primary" onclick="startQuiz()">다시 풀기</button>'+
+    '<button class="btn btn-ghost" onclick="go(\'home\')">홈으로</button></div></div>';
+}
+
+/* ---------- 시뮬레이션 ---------- */
+var sim;
+function initSim(){
+  sim={ price:10000, day:0, cash:1000000, qty:0, avg:0, hist:[10000], chg:0 };
+  renderSim(); logSim('모의투자를 시작했어요. 초기 자금 100만원.');
+  document.getElementById('simLog').innerHTML='<div>모의투자 시작 · 현금 100만원</div>';
+}
+function fmt(n){ return Math.round(n).toLocaleString('ko-KR'); }
+function renderSim(){
+  document.getElementById('simPrice').textContent=fmt(sim.price)+'원';
+  var c=document.getElementById('simChg');
+  c.textContent=(sim.chg>=0?'+':'')+sim.chg.toFixed(1)+'% (오늘)';
+  c.style.color=sim.chg>0?'var(--red)':sim.chg<0?'var(--blue)':'var(--sub2)';
+  document.getElementById('simCash').textContent=fmt(sim.cash);
+  document.getElementById('simQty').textContent=sim.qty+'주';
+  var pnl=(sim.price-sim.avg)*sim.qty;
+  var pe=document.getElementById('simPnl');
+  pe.textContent=(pnl>0?'+':'')+fmt(pnl);
+  pe.style.color=pnl>0?'var(--red)':pnl<0?'var(--blue)':'var(--ink)';
+  drawSim();
+}
+function drawSim(){
+  var cv=document.getElementById('simChart'); var ctx=cv.getContext('2d');
+  var w=cv.clientWidth,h=cv.clientHeight,dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr; cv.height=h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  var a=sim.hist, min=Math.min.apply(null,a), max=Math.max.apply(null,a), pad=10, gap=(max-min)||1;
+  min-=gap*0.12; max+=gap*0.12;
+  function X(i){return pad+i*(w-2*pad)/Math.max(a.length-1,1);}
+  function Y(v){return h-pad-(v-min)/(max-min)*(h-2*pad);}
+  var rising=a[a.length-1]>=a[0];
+  var col=rising?'#F04452':'#3182F6';
+  var grad=ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0, rising?'rgba(240,68,82,.18)':'rgba(49,130,246,.18)'); grad.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.beginPath(); a.forEach(function(v,i){ i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)); });
+  ctx.lineTo(X(a.length-1),h-pad); ctx.lineTo(X(0),h-pad); ctx.closePath(); ctx.fillStyle=grad; ctx.fill();
+  ctx.beginPath(); a.forEach(function(v,i){ i?ctx.lineTo(X(i),Y(v)):ctx.moveTo(X(i),Y(v)); });
+  ctx.strokeStyle=col; ctx.lineWidth=2.4; ctx.lineJoin='round'; ctx.stroke();
+  ctx.fillStyle=col; ctx.beginPath(); ctx.arc(X(a.length-1),Y(a[a.length-1]),3.5,0,7); ctx.fill();
+}
+function simNextDay(){
+  // 기초지수 하루 등락 ±(0~5%), 레버리지는 2배
+  var idxMove=(Math.random()*10-5)/100;          // -5% ~ +5%
+  var levMove=idxMove*2;
+  sim.chg=levMove*100;
+  sim.price=Math.max(500, sim.price*(1+levMove));
+  sim.hist.push(sim.price); if(sim.hist.length>30) sim.hist.shift();
+  sim.day++;
+  var tag=levMove>=0?'<span class="win">+'+(levMove*100).toFixed(1)+'%</span>':'<span class="lose">'+(levMove*100).toFixed(1)+'%</span>';
+  logSim('Day '+sim.day+' · 지수 '+(idxMove*100).toFixed(1)+'% → 레버리지 '+tag+' · 가격 '+fmt(sim.price)+'원');
+  renderSim();
+}
+function simBuy(){
+  var cost=sim.price*10;
+  if(sim.cash<cost){ toast('현금이 부족해요'); return; }
+  sim.avg=(sim.avg*sim.qty+cost)/(sim.qty+10);
+  sim.qty+=10; sim.cash-=cost;
+  logSim('🔴 매수 10주 @'+fmt(sim.price)+'원');
+  renderSim();
+}
+function simSell(){
+  if(sim.qty<10){ toast('보유수량이 부족해요'); return; }
+  var gain=sim.price*10;
+  var realized=(sim.price-sim.avg)*10;
+  sim.qty-=10; sim.cash+=gain;
+  if(sim.qty===0) sim.avg=0;
+  logSim('🟢 매도 10주 @'+fmt(sim.price)+'원 · 실현손익 '+(realized>=0?'+':'')+fmt(realized));
+  renderSim();
+}
+function logSim(t){
+  var l=document.getElementById('simLog');
+  var d=document.createElement('div'); d.innerHTML=t; l.prepend(d);
+}
+
+/* ---------- 위험 안내 플로우 ---------- */
+var pendingProduct='';
+function openOrder(name, desc){
+  document.getElementById('orderTitle').textContent=name;
+  document.getElementById('orderName').textContent=name;
+  document.getElementById('orderDesc').textContent=desc+' · 주문 화면 데모입니다. (실제 주문은 되지 않아요)';
+  go('order');
+}
+function openWarning(product){
+  pendingProduct=product;
+  document.getElementById('warnProduct').textContent=product;
+  document.querySelectorAll('#warnSheet .ck').forEach(function(c){c.classList.remove('on');});
+  document.getElementById('proceedBtn').disabled=true;
+  document.getElementById('warnSheet').classList.add('open');
+}
+function closeWarning(){ document.getElementById('warnSheet').classList.remove('open'); }
+function toggleCk(el){
+  el.classList.toggle('on');
+  var all=document.querySelectorAll('#warnSheet .ck'), done=document.querySelectorAll('#warnSheet .ck.on');
+  document.getElementById('proceedBtn').disabled=(all.length!==done.length);
+}
+function proceedAfterWarning(){ closeWarning(); openOrder(pendingProduct,'고위험 레버리지 상품'); }
+
+/* 고위험 종목 클릭 -> 체험 허브로 진입 (상품명 기억) */
+function enterHub(product){
+  pendingProduct=product;
+  document.getElementById('warnProduct').textContent=product;
+  go('home');
+}
+
+/* ---------- toast ---------- */
+var toastTimer;
+function toast(msg){
+  var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show');},1800);
+}
+
+window.addEventListener('resize', function(){ if(document.getElementById('neg').classList.contains('active')) renderNeg(); if(sim&&document.getElementById('sim').classList.contains('active')) drawSim(); });
+</script>
+</body>
+</html>
