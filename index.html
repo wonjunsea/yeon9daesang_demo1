@@ -789,12 +789,11 @@ function enterHub(product){
   go('home');
 }
 
-/* 고위험 종목 클릭 -> 랜덤으로 음의복리 / 급등주 멘토 롤플레잉 진입 */
+/* 고위험 종목 클릭 -> 급등주 멘토 롤플레잉 진입 (음의복리 시나리오는 startMentor('compound')로 재사용 가능) */
 function enterCase(product){
   pendingProduct=product;
   document.getElementById('warnProduct').textContent=product;
-  if(Math.random()<0.5){ go('case'); startMentor('compound'); }
-  else { go('case2'); startMentor('surge'); }
+  go('case2'); startMentor('surge');
 }
 
 /* ========== 금융 멘토 롤플레잉 (스크립트형) ==========
