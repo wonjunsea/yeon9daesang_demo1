@@ -173,6 +173,22 @@
   .ct-row.hot .ct-txt b{color:var(--red);}
   .case-quote{background:var(--bg);border-radius:14px;padding:15px 16px;font-size:13.5px;line-height:1.6;color:var(--sub);margin:18px 2px 6px;font-weight:600;}
 
+  /* ===== 멘토 롤플레잉 채팅 ===== */
+  .chatscroll{padding:16px 16px 6px;background:var(--bg);}
+  .msg{display:flex;gap:8px;margin-bottom:12px;}
+  .msg.user{flex-direction:row-reverse;}
+  .msg .av{width:34px;height:34px;border-radius:11px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .msg .bubble{padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.6;max-width:80%;}
+  .msg.bot .bubble{background:#fff;color:var(--ink);border-top-left-radius:5px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
+  .msg.bot .bubble b{color:var(--blue-dark);}
+  .msg.user .bubble{background:var(--blue);color:#fff;border-top-right-radius:5px;}
+  .msg.typing .bubble{color:var(--sub2);letter-spacing:2px;}
+  .dots{display:inline-block;animation:blink 1.2s infinite;}
+  @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+  .chat-choices{padding:4px 16px 10px;display:flex;flex-direction:column;gap:8px;background:var(--bg);}
+  .choice-btn{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;font-size:14px;font-weight:600;color:var(--ink);text-align:left;cursor:pointer;font-family:inherit;transition:.12s;}
+  .choice-btn:active{background:#EEF1F4;transform:scale(.995);}
+
   /* ===== 게임: 레버리지 라이더 ===== */
   #game,#game2{background:#0B0E14;}
   #game .topbar,#game2 .topbar{background:#0B0E14;} #game .topbar .back,#game .topbar .title,#game2 .topbar .back,#game2 .topbar .title{color:#fff;}
@@ -407,24 +423,12 @@
       <div class="cta"><button class="btn btn-primary" onclick="toast('데모: 주문이 접수되었어요')">매수하기</button></div>
     </section>
 
-    <!-- ===== 음의 복리 사례 (case) ===== -->
+    <!-- ===== 음의 복리 : 금융 멘토 롤플레잉 (case) ===== -->
     <section class="screen" id="case">
-      <div class="topbar"><button class="back" onclick="go('list')">‹</button><div class="title">음의 복리</div></div>
-      <div class="scroll">
-        <div class="case-hero">
-          <div class="case-badge">CASE · 음의 복리</div>
-          <h1 class="case-h1">지수는 제자리인데,<br>왜 레버리지만 녹아버릴까?</h1>
-          <p class="case-lead">레버리지 상품은 <b>매일 배율로 다시 계산</b>돼요. 그래서 지수가 오르락내리락만 반복해도 원금이 조금씩 깎이는데, 이걸 <b>음의 복리(변동성 손실)</b>라고 해요.</p>
-        </div>
-        <div class="case-time">
-          <div class="ct-row"><div class="ct-day">1일</div><div class="ct-txt">지수 <b>-10%</b> → 2배 레버리지는 <b>-20%</b> (100 → 80)</div></div>
-          <div class="ct-row"><div class="ct-day">2일</div><div class="ct-txt">지수 <b>+11%</b>로 원위치 → 2배는 +22%지만 80 기준이라 <b>97.8</b></div></div>
-          <div class="ct-row hot"><div class="ct-day">반복</div><div class="ct-txt">오르락내리락만 해도 <b>원금이 계속 깎여요</b> (변동성 손실 누적)</div></div>
-          <div class="ct-row"><div class="ct-day">결과</div><div class="ct-txt">지수는 <b>제자리(0%)</b>, 레버리지는 <b>마이너스</b> · 3배는 청산까지</div></div>
-        </div>
-        <div class="case-quote">"본주는 돌아왔는데, 레버리지는 왜 못 돌아왔을까?" — 같은 차트를 직접 달려보며 확인해보세요.</div>
-      </div>
-      <div class="cta"><button class="btn btn-primary" onclick="go('game')">다음 · 직접 체험하기 →</button></div>
+      <div class="topbar"><button class="back" onclick="go('list')">‹</button><div class="title">🧑‍🏫 금융 멘토</div></div>
+      <div class="scroll chatscroll" id="chatScroll1"></div>
+      <div class="chat-choices" id="chatChoices1"></div>
+      <div class="cta" id="chatCta1" style="display:none"><button class="btn btn-primary" onclick="go('game')">다음 · 직접 체험하기 →</button></div>
     </section>
 
     <!-- ===== 게임: 레버리지 라이더 ===== -->
@@ -467,24 +471,12 @@
       </div>
     </section>
 
-    <!-- ===== 급등주 사례 (case2) ===== -->
+    <!-- ===== 급등주 : 금융 멘토 롤플레잉 (case2) ===== -->
     <section class="screen" id="case2">
-      <div class="topbar"><button class="back" onclick="go('list')">‹</button><div class="title">급등주</div></div>
-      <div class="scroll">
-        <div class="case-hero">
-          <div class="case-badge">CASE · 급등주</div>
-          <h1 class="case-h1">모두가 올라탄 급등주,<br>끝은 어땠을까?</h1>
-          <p class="case-lead">'에코비트' 같은 급등주는 <b>"지금 안 사면 늦는다"</b>는 분위기에 며칠 만에 폭등해요. 문제는 <b>언제 꺼질지 아무도 모른다</b>는 것. 대부분은 고점에 사서 물립니다.</p>
-        </div>
-        <div class="case-time">
-          <div class="ct-row"><div class="ct-day">1단계</div><div class="ct-txt"><b>급등 시작</b> · SNS·유튜브 확산, "가즈아" 분위기</div></div>
-          <div class="ct-row"><div class="ct-day">2단계</div><div class="ct-txt"><b>FOMO 매수</b> · 늦게 탄 사람들이 고점에 영끌 매수</div></div>
-          <div class="ct-row hot"><div class="ct-day">3단계</div><div class="ct-txt"><b>급락</b> · 세력·초기 매수자 이탈 → 하루아침에 폭락</div></div>
-          <div class="ct-row"><div class="ct-day">4단계</div><div class="ct-txt"><b>물림·손절</b> · 고점 매수자만 큰 손실로 남음</div></div>
-        </div>
-        <div class="case-quote">"지금 안 사면 늦는다?" — 직접 매매해보고 타이밍을 잡을 수 있는지 확인해보세요.</div>
-      </div>
-      <div class="cta"><button class="btn btn-primary" onclick="resetSurge(); go('game2')">다음 · 직접 매매하기 →</button></div>
+      <div class="topbar"><button class="back" onclick="go('list')">‹</button><div class="title">🧑‍🏫 금융 멘토</div></div>
+      <div class="scroll chatscroll" id="chatScroll2"></div>
+      <div class="chat-choices" id="chatChoices2"></div>
+      <div class="cta" id="chatCta2" style="display:none"><button class="btn btn-primary" onclick="resetSurge(); go('game2')">다음 · 직접 매매하기 →</button></div>
     </section>
 
     <!-- ===== 게임2: 급등주 타이밍 시뮬레이션 ===== -->
@@ -797,11 +789,90 @@ function enterHub(product){
   go('home');
 }
 
-/* 고위험 종목 클릭 -> 랜덤으로 음의복리 / 급등주 사례 진입 */
+/* 고위험 종목 클릭 -> 랜덤으로 음의복리 / 급등주 멘토 롤플레잉 진입 */
 function enterCase(product){
   pendingProduct=product;
   document.getElementById('warnProduct').textContent=product;
-  if(Math.random()<0.5) go('case'); else go('case2');
+  if(Math.random()<0.5){ go('case'); startMentor('compound'); }
+  else { go('case2'); startMentor('surge'); }
+}
+
+/* ========== 금융 멘토 롤플레잉 (스크립트형) ==========
+   [LLM 연동 지점] 실제 개발 시엔 showMentorNode의 고정 스크립트 대신
+   async function llmMentorReply(history, userText){ return fetch('/api/mentor',{...}) }
+   형태로 교체하고, 선택지 버튼을 자유 입력창으로 바꾸면 됩니다.        */
+var MENTOR = {
+  compound: { av:'🧑‍🏫', go:'game', nodes:{
+    start:{ bot:["안녕하세요, 저는 <b>금융 멘토</b>예요 🧑‍🏫","'KODEX 레버리지' 같은 2배 상품에 관심 있으시군요. 시작 전에 하나만요 — 레버리지 상품이 어떻게 움직이는지 알고 계세요?"],
+      choices:[{t:"지수랑 똑같이 1배로요",next:"move_wrong"},{t:"지수의 2배로 움직여요",next:"move_right"},{t:"잘 모르겠어요",next:"move_idk"}] },
+    move_wrong:{ bot:["앗, 그건 일반 ETF예요 🙂","레버리지는 지수 하루 등락의 <b>2배</b>로 움직여요. 지수가 -3%면 이건 약 -6%죠."], choices:[{t:"아 그렇구나",next:"q_decay"}] },
+    move_right:{ bot:["정확해요! 👏 지수 하루 등락의 <b>2배</b>로 움직이죠."], choices:[{t:"네 맞아요",next:"q_decay"}] },
+    move_idk:{ bot:["괜찮아요, 그래서 제가 있는 거예요 🙂","레버리지는 지수 하루 등락의 <b>2배</b>로 움직여요. 오를 때도 내릴 때도요."], choices:[{t:"이해했어요",next:"q_decay"}] },
+    q_decay:{ bot:["그럼 핵심 질문이에요.","지수가 <b>-10%</b> 떨어졌다가 다음 날 <b>+11%</b>로 제자리로 돌아왔어요. 2배 레버리지는 지금 몇 %일까요?"],
+      choices:[{t:"똑같이 0%요",next:"a_zero"},{t:"마이너스일 것 같아요",next:"a_minus"}] },
+    a_zero:{ bot:["많이들 그렇게 생각해요. 근데 아니에요 😮","첫날 -20%(100→80), 둘째 날 +22%(80→97.6). 지수는 제자리인데 레버리지는 <b>-2.4%</b>예요."], choices:[{t:"어 왜 손해지?",next:"explain"}] },
+    a_minus:{ bot:["감이 좋으시네요! 👍","첫날 -20%(100→80), 둘째 날 +22%(80→97.6). 제자리로 와도 <b>-2.4%</b>가 남죠."], choices:[{t:"왜 그런 거예요?",next:"explain"}] },
+    explain:{ bot:["레버리지는 <b>매일</b> 배율을 다시 계산해요. 그래서 오르락내리락만 반복해도 원금이 조금씩 깎이죠.","이걸 <b>음의 복리(변동성 손실)</b>라고 해요. 등락이 클수록 더 심해지고요."], choices:[{t:"직접 확인해보고 싶어요",next:"end"}] },
+    end:{ bot:["좋아요! 같은 차트를 1·2·3배로 직접 달려볼게요. 왜 레버리지가 못 돌아오는지 몸으로 느껴질 거예요 🏁"], end:true }
+  }},
+  surge: { av:'🧑‍🏫', go:'game2', nodes:{
+    start:{ bot:["안녕하세요, <b>금융 멘토</b>예요 🧑‍🏫","'에코비트'가 5일 만에 <b>+142%</b> 급등했네요. 지금 사고 싶으신 거죠? 솔직히 왜 사고 싶으세요?"],
+      choices:[{t:"다들 사니까, 놓칠까봐요",next:"s_fomo"},{t:"더 오를 것 같아서요",next:"s_more"},{t:"친구가 돈 벌었대요",next:"s_friend"}] },
+    s_fomo:{ bot:["그 마음이 바로 <b>FOMO</b>(놓칠까 봐 두려운 심리)예요.","급등주는 그 FOMO가 몰릴 때가 <b>가장 위험한 순간</b>이기도 해요."], choices:[{t:"음... 그런가",next:"q_drop"}] },
+    s_more:{ bot:["더 오를지도 몰라요. 근데 문제는 <b>언제 꺼질지 아무도 모른다</b>는 거예요.","이미 +142% 오른 종목은, 초기 매수자들이 팔고 나갈 자리이기도 하죠."], choices:[{t:"듣고 보니 무섭네",next:"q_drop"}] },
+    s_friend:{ bot:["친구는 <b>일찍</b> 탔을 거예요. 남의 수익담이 들릴 때쯤이면 보통 늦은 타이밍이에요.","수익 낸 사람은 말하고, 물린 사람은 조용하거든요."], choices:[{t:"그것도 맞네",next:"q_drop"}] },
+    q_drop:{ bot:["가정해볼게요. 지금 전 재산으로 샀는데 내일 <b>-30%</b> 급락하면 어떻게 하실 거예요?"],
+      choices:[{t:"바로 손절해요",next:"a_cut"},{t:"오를 때까지 존버해요",next:"a_hold"}] },
+    a_cut:{ bot:["말은 쉬운데, 실제로 급락이 시작되면 '조금만 기다리면 반등하겠지' 하다가 <b>타이밍을 놓쳐요.</b>"], choices:[{t:"직접 해볼래요",next:"end"}] },
+    a_hold:{ bot:["급등주는 한번 꺼지면 <b>영영 안 돌아오는</b> 경우가 많아요. 존버가 답이 아닐 수 있어요."], choices:[{t:"직접 해볼래요",next:"end"}] },
+    end:{ bot:["좋아요. 직접 매매해보면서, 과연 급락 직전에 팔고 나올 수 있는지 확인해봐요 📈"], end:true }
+  }}
+};
+var chatState={ type:null, scrollId:null, choicesId:null, ctaId:null };
+function startMentor(type){
+  var cfg = type==='compound'? {s:'chatScroll1',c:'chatChoices1',t:'chatCta1'} : {s:'chatScroll2',c:'chatChoices2',t:'chatCta2'};
+  chatState={ type:type, scrollId:cfg.s, choicesId:cfg.c, ctaId:cfg.t };
+  document.getElementById(cfg.s).innerHTML='';
+  document.getElementById(cfg.c).innerHTML='';
+  document.getElementById(cfg.t).style.display='none';
+  showMentorNode('start');
+}
+function appendMsg(who, html){
+  var s=document.getElementById(chatState.scrollId);
+  var m=document.createElement('div'); m.className='msg '+who;
+  var av = (who.indexOf('bot')===0)? '<div class="av">'+MENTOR[chatState.type].av+'</div>' : '';
+  m.innerHTML = av+'<div class="bubble">'+html+'</div>';
+  s.appendChild(m); s.scrollTop=s.scrollHeight;
+  return m;
+}
+function showMentorNode(id){
+  var node=MENTOR[chatState.type].nodes[id];
+  var msgs=node.bot.slice();
+  document.getElementById(chatState.choicesId).innerHTML='';
+  (function next(){
+    if(msgs.length===0){ afterMentorMsgs(node); return; }
+    var typing=appendMsg('bot typing','<span class="dots">● ● ●</span>');
+    setTimeout(function(){
+      typing.remove();
+      appendMsg('bot', msgs.shift());
+      setTimeout(next, 320);
+    }, 560);
+  })();
+}
+function afterMentorMsgs(node){
+  if(node.end){ document.getElementById(chatState.ctaId).style.display='block';
+    var s=document.getElementById(chatState.scrollId); s.scrollTop=s.scrollHeight; return; }
+  var c=document.getElementById(chatState.choicesId);
+  node.choices.forEach(function(ch){
+    var b=document.createElement('button'); b.className='choice-btn'; b.textContent=ch.t;
+    b.onclick=function(){ chooseMentor(ch); };
+    c.appendChild(b);
+  });
+}
+function chooseMentor(ch){
+  document.getElementById(chatState.choicesId).innerHTML='';
+  appendMsg('user', ch.t);
+  setTimeout(function(){ showMentorNode(ch.next); }, 280);
 }
 
 /* ========== 게임: 레버리지 라이더 ========== */
